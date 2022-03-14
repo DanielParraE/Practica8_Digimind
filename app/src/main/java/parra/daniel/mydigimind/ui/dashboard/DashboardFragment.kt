@@ -4,10 +4,10 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import kotlinx.android.synthetic.main.fragment_dashboard.*
 import parra.daniel.mydigimind.R
 import parra.daniel.mydigimind.databinding.FragmentDashboardBinding
 
@@ -33,7 +33,34 @@ class DashboardFragment : Fragment() {
         dashboardViewModel.text.observe(viewLifecycleOwner, Observer {
 
         })
+
         return root
+    }
+
+    fun getCheckedDays() : ArrayList<String> {
+        val days = ArrayList<String>()
+        if (cb_monday.isChecked) {
+            days.add("Monday")
+        }
+        if (cb_tuesday.isChecked) {
+            days.add("Tuesday")
+        }
+        if (cb_wednesday.isChecked) {
+            days.add("Wednesday")
+        }
+        if (cb_thursday.isChecked) {
+            days.add("Thursday")
+        }
+        if (cb_friday.isChecked) {
+            days.add("Friday")
+        }
+        if (cb_saturday.isChecked) {
+            days.add("Saturday")
+        }
+        if (cb_sunday.isChecked) {
+            days.add("Sunday")
+        }
+        return days
     }
 
     override fun onDestroyView() {

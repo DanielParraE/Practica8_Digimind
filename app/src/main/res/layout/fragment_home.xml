@@ -5,6 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
+    android:background="@color/white"
     tools:context=".ui.home.HomeFragment">
 
     <ImageView
@@ -18,7 +19,11 @@
         android:layout_height="wrap_content"
         android:layout_weight="7.2"
         android:numColumns="3"
-        android:id="@+id/gw_home"/>
+        android:id="@+id/gw_home"
+        android:horizontalSpacing="10dp"
+        android:verticalSpacing="10dp"
+        android:paddingLeft="20dp"
+        android:paddingRight="20dp"/>
 
     <View
         android:layout_width="match_parent"

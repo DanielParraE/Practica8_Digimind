@@ -1,17 +1,27 @@
 package parra.daniel.mydigimind.ui.home
 
+import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.BaseAdapter
+import android.widget.GridView
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import kotlinx.android.synthetic.main.fragment_home.*
+import kotlinx.android.synthetic.main.recordatorio.view.*
+import parra.daniel.mydigimind.Carrito
 import parra.daniel.mydigimind.R
+import parra.daniel.mydigimind.Recordatorio
 import parra.daniel.mydigimind.databinding.FragmentHomeBinding
 
 class HomeFragment : Fragment() {
+
+    var carrito: Carrito = Carrito()
 
     private var _binding: FragmentHomeBinding? = null
 
@@ -31,15 +41,62 @@ class HomeFragment : Fragment() {
 
         val root = inflater.inflate(R.layout.fragment_home, container, false)
 
-        homeViewModel.text.observe(viewLifecycleOwner, Observer {
+        homeViewModel.text.observe(viewLifecycleOwner, Observer {})
 
-        })
+        loadReminders()
+
+        var remindersAdapter: ReminderAdapter = ReminderAdapter(this.requireContext(), carrito.recordatorios)
+
+        var gw = root.findViewById(R.id.gw_home) as GridView
+
+        gw.adapter = remindersAdapter
 
         return root
+    }
+
+    fun loadReminders() {
+        for (i in 0..8) {
+            carrito.agregar(Recordatorio("Everyday", "17:00", "Practice"))
+        }
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
     }
+
+}
+
+class ReminderAdapter: BaseAdapter {
+
+    var reminders = ArrayList<Recordatorio>()
+    var context: Context? = null
+
+    constructor(context: Context, movies: ArrayList<Recordatorio>) {
+        this.context = context
+        this.reminders = movies
+    }
+
+    override fun getCount(): Int {
+        return reminders.size
+    }
+
+    override fun getItem(p0: Int): Any {
+        return reminders[p0]
+    }
+
+    override fun getItemId(p0: Int): Long {
+        return p0.toLong()
+    }
+
+    override fun getView(p0: Int, p1: View?, p2: ViewGroup?): View {
+        var reminder = reminders[p0]
+        var inflator = context!!.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
+        var view = inflator.inflate(R.layout.recordatorio, null)
+        view.tw_dias_recordatorio.setText(reminder.days)
+        view.tw_nombre_recordatorio.setText(reminder.name)
+        view.tw_tiempo_recordatorio.setText(reminder.time)
+        return view
+    }
+
 }
