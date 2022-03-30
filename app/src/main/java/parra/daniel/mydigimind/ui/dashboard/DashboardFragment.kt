@@ -1,15 +1,23 @@
 package parra.daniel.mydigimind.ui.dashboard
 
+import android.app.TimePickerDialog
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import kotlinx.android.synthetic.main.fragment_dashboard.*
+import kotlinx.android.synthetic.main.fragment_dashboard.view.*
 import parra.daniel.mydigimind.R
+import parra.daniel.mydigimind.Recordatorio
 import parra.daniel.mydigimind.databinding.FragmentDashboardBinding
+import parra.daniel.mydigimind.ui.home.HomeFragment
+import java.text.SimpleDateFormat
+import java.util.*
+import kotlin.collections.ArrayList
 
 class DashboardFragment : Fragment() {
 
@@ -33,6 +41,32 @@ class DashboardFragment : Fragment() {
         dashboardViewModel.text.observe(viewLifecycleOwner, Observer {
 
         })
+
+        root.btn_time.setOnClickListener {
+            val cal = Calendar.getInstance()
+            val timeSetListener = TimePickerDialog.OnTimeSetListener { timePicker, hour, minute ->
+                cal.set(Calendar.HOUR_OF_DAY, hour)
+                cal.set(Calendar.MINUTE, minute)
+
+                txt_time.text = SimpleDateFormat("HH:mm").format(cal.time)
+            }
+            TimePickerDialog(root.context, timeSetListener, cal.get(Calendar.HOUR_OF_DAY), cal.get(Calendar.MINUTE),
+                true).show()
+        }
+
+        root.btn_save.setOnClickListener {
+            var title = et_remember_text.text.toString()
+            var time = btn_time.text.toString()
+
+            var days = getCheckedDays()
+
+            var reminder = Recordatorio(days, time, title)
+
+            HomeFragment.recordatorios.add(reminder)
+
+            Toast.makeText(root.context, "New Task Added", Toast.LENGTH_SHORT).show()
+
+        }
 
         return root
     }
