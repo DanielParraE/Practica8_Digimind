@@ -6,6 +6,8 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import com.google.firebase.firestore.ktx.firestore
+import com.google.firebase.ktx.Firebase
 import kotlinx.android.synthetic.main.fragment_home.view.*
 import parra.daniel.mydigimind.R
 import parra.daniel.mydigimind.Recordatorio
@@ -19,7 +21,10 @@ class HomeFragment : Fragment() {
     companion object {
         var recordatorios = ArrayList<Recordatorio>()
         var first = true
+        private val TAG = "DocSnippets"
     }
+
+    val db = Firebase.firestore
 
     private var _binding: FragmentHomeBinding? = null
 
@@ -39,10 +44,14 @@ class HomeFragment : Fragment() {
 
         val root = inflater.inflate(R.layout.fragment_home, container, false)
 
-        if (first) {
-            loadReminders()
-            first = false
-        }
+        db.collection("actividades").get()
+            .addOnSuccessListener { documents ->
+                for (document in documents) {
+                    if (!recordatorios.contains(document.toObject(Recordatorio::class.java))) {
+                        recordatorios.add(document.toObject(Recordatorio::class.java))
+                    }
+                }
+            }
 
         adaptador = ReminderAdapter(root.context, recordatorios)
 
@@ -51,15 +60,15 @@ class HomeFragment : Fragment() {
         return root
     }
 
-    private fun loadReminders() {
-        recordatorios.add(Recordatorio(arrayListOf("Tuesday"), "17:30", "Practice 1"))
-        recordatorios.add(Recordatorio(arrayListOf("Monday", "Sunday"), "17:30", "Practice 2"))
-        recordatorios.add(Recordatorio(arrayListOf("Wednesday"), "14:00", "Practice 3"))
-        recordatorios.add(Recordatorio(arrayListOf("Saturday"), "11:00", "Practice 4"))
-        recordatorios.add(Recordatorio(arrayListOf("Tuesday"), "13:00", "Practice 5"))
-        recordatorios.add(Recordatorio(arrayListOf("Thursday"), "10:40", "Practice 6"))
-        recordatorios.add(Recordatorio(arrayListOf("Monday"), "12:00", "Practice 7"))
-    }
+//    private fun loadReminders() {
+//        recordatorios.add(Recordatorio(arrayListOf("Tuesday"), "17:30", "Practice 1"))
+//        recordatorios.add(Recordatorio(arrayListOf("Monday", "Sunday"), "17:30", "Practice 2"))
+//        recordatorios.add(Recordatorio(arrayListOf("Wednesday"), "14:00", "Practice 3"))
+//        recordatorios.add(Recordatorio(arrayListOf("Saturday"), "11:00", "Practice 4"))
+//        recordatorios.add(Recordatorio(arrayListOf("Tuesday"), "13:00", "Practice 5"))
+//        recordatorios.add(Recordatorio(arrayListOf("Thursday"), "10:40", "Practice 6"))
+//        recordatorios.add(Recordatorio(arrayListOf("Monday"), "12:00", "Practice 7"))
+//    }
 
     override fun onDestroyView() {
         super.onDestroyView()

@@ -2,6 +2,7 @@ package parra.daniel.mydigimind.ui.dashboard
 
 import android.app.TimePickerDialog
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -9,6 +10,8 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import com.google.firebase.firestore.ktx.firestore
+import com.google.firebase.ktx.Firebase
 import kotlinx.android.synthetic.main.fragment_dashboard.*
 import kotlinx.android.synthetic.main.fragment_dashboard.view.*
 import parra.daniel.mydigimind.R
@@ -24,6 +27,12 @@ class DashboardFragment : Fragment() {
     private lateinit var dashboardViewModel: DashboardViewModel
 
     private var _binding: FragmentDashboardBinding? = null
+
+    val db = Firebase.firestore
+
+    companion object {
+        private val TAG = "DocSnippets"
+    }
 
     // This property is only valid between onCreateView and
     // onDestroyView.
@@ -56,15 +65,28 @@ class DashboardFragment : Fragment() {
 
         root.btn_save.setOnClickListener {
             var title = et_remember_text.text.toString()
-            var time = btn_time.text.toString()
 
-            var days = getCheckedDays()
+            var time = txt_time.text.toString()
 
-            var reminder = Recordatorio(days, time, title)
+            if (!time.isBlank() && !time.isEmpty() && time != "Set Time" && time != "Set time") {
+                var days = getCheckedDays()
 
-            HomeFragment.recordatorios.add(reminder)
+                var reminder = Recordatorio(days, time, title)
 
-            Toast.makeText(root.context, "New Task Added", Toast.LENGTH_SHORT).show()
+                db.collection("actividades").add(reminder)
+                    .addOnSuccessListener { documentReference ->
+                        Log.d(TAG, "DocumentSnapshot added with ID: ${documentReference.id}")
+                    }
+                    .addOnFailureListener { e ->
+                        Log.w(TAG,  "Error adding document", e)
+                    }
+
+                // HomeFragment.recordatorios.add(reminder)
+
+                Toast.makeText(root.context, "New Task Added", Toast.LENGTH_SHORT).show()
+            } else {
+                Toast.makeText(root.context, "Select time", Toast.LENGTH_SHORT).show()
+            }
 
         }
 
